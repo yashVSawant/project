@@ -34,11 +34,30 @@ const createPost = new Promise((resolve,reject)=>{
 function deletePost() {
     return new Promise((resolve,reject)=>{
         setTimeout(()=>{
+           if(posts.length){
             posts.pop();
             resolve();
+           }else{
+            reject();
+           }
+
         },1000)
     })
 }
 
+async function fun(){
+        try{
+            let promise1 = await Promise.all([createPost,updateLastUserActivityTime])
+            printPost();
+            printActivityTime();
+            await deletePost();
+            await deletePost();
+            printPost();
+            await deletePost();
+            await deletePost();
 
-Promise.all([createPost,updateLastUserActivityTime]).then(printPost).then(printActivityTime).then(deletePost).then(printPost);
+        }catch(err){
+            console.log('error');
+        }
+}
+fun();
