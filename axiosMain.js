@@ -1,50 +1,138 @@
+// AXIOS GLOBALS
+axios.defaults.headers.common['X-Auth-Token'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+
 // GET REQUEST
 function getTodos() {
-    console.log('GET Request');
+   axios
+   .get('https://jsonplaceholder.typicode.com/todos?_limit=5')
+   .then(res=>showOutput(res))
+   .catch(res=> console.log(res))
   }
   
   // POST REQUEST
   function addTodo() {
-    console.log('POST Request');
+    axios
+   .post('https://jsonplaceholder.typicode.com/todos?_limit=5',{
+    title:'NEW TODO',
+    completed: false
+   })
+   .then(res=>showOutput(res))
+   .catch(res=> console.log(res))
   }
   
   // PUT/PATCH REQUEST
   function updateTodo() {
-    console.log('PUT/PATCH Request');
+    axios
+   .patch('https://jsonplaceholder.typicode.com/todos/1?_limit=5',{
+    title:'Updated TODO',
+    completed: true
+   })
+   .then(res=>showOutput(res))
+   .catch(res=> console.log(res))
   }
   
   // DELETE REQUEST
   function removeTodo() {
-    console.log('DELETE Request');
+    axios
+   .delete('https://jsonplaceholder.typicode.com/todos/1?_limit=5')
+   .then(res=>showOutput(res))
+   .catch(err=> console.log(err))
   }
   
   // SIMULTANEOUS DATA
   function getData() {
-    console.log('Simultaneous Request');
+    axios.all([
+        axios.get('https://jsonplaceholder.typicode.com/todos?_limit=5'),
+        axios.get('https://jsonplaceholder.typicode.com/posts?_limit=5')
+    ])
+    .then(axios.spread((todos,posts)=> showOutput(posts)))
+   .catch(err=> console.log(err))
   }
   
   // CUSTOM HEADERS
   function customHeaders() {
-    console.log('Custom Headers');
+    const config ={
+        headers:{
+            'content-type': 'application/json',
+            Autherization: 'sometoken'
+        }
+    }
+    axios
+    .post('https://jsonplaceholder.typicode.com/todos?_limit=5',{
+        title: 'New Todo',
+        complete: false
+    },config
+    )
+    .then(res=>showOutput(res))
+    .catch(res=> console.log(res))
   }
-  
+ 
   // TRANSFORMING REQUESTS & RESPONSES
   function transformResponse() {
-    console.log('Transform Response');
+    const options = {
+        methode: 'post',
+        url: 'https://jsonplaceholder.typicode.com/todos',
+        data: {
+            title: 'Hellow world'
+        },
+        transformResponse: axios.defaults.transformResponse.concat(data =>{
+            data.title = data.title.toUpperCase();
+            return data;
+        })
+    }
+    axios(options).then(res => showOutput(res))
   }
   
   // ERROR HANDLING
   function errorHandling() {
-    console.log('Error Handling');
+    axios
+    .get('https://jsonplaceholder.typicode.com/todos?_limit=5')
+    .then(res=>showOutput(res))
+    .catch(err=> {
+        if(err.response){
+            console.log(err.response.data);
+            console.log(err.response.status);
+            console.log(err.response.header);
+            if(err.response.status === 404){
+                alert('Error : Page Not found');
+            }
+        }else if (err.request){
+            console.log(err.request);
+        }else {
+            console.log(err.message);
+        }
+        
+    });
   }
   
   // CANCEL TOKEN
   function cancelToken() {
-    console.log('Cancel Token');
+    const source = axios.CancelToken.source();
+
+    axios
+    .get('https://jsonplaceholder.typicode.com/todos?_limit=5',{
+        cancelToken: source.token
+    })
+    .then(res=>showOutput(res))
+    .catch(thrown =>{
+        if(axios.isCancel(thrown)){
+            console.log('request cancled',thrown.message)
+        }
+    });
+    if(true){
+        source.cancel('request cancels')
+    }
   }
   
   // INTERCEPTING REQUESTS & RESPONSES
-  
+  axios.interceptors.request.use(config => {
+    console.log(`${config.method.toUpperCase()} request sent to ${config.url} at ${new Date()}`);
+  return config
+},
+error => {
+    return Promise.reject(error)
+});
+
   // AXIOS INSTANCES
   
   // Show output in browser
