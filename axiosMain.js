@@ -70,12 +70,13 @@ function getTodos() {
   // TRANSFORMING REQUESTS & RESPONSES
   function transformResponse() {
     const options = {
-        methode: 'post',
-        url: 'https://jsonplaceholder.typicode.com/todos',
-        data: {
-            title: 'Hellow world'
+        method:'post',
+        url:'https://jsonplaceholder.typicode.com/todos',
+        data:{
+            title:'Hellow world'
         },
-        transformResponse: axios.defaults.transformResponse.concat(data =>{
+        transformResponse: axios.defaults.transformResponse.concat((data) =>{
+           
             data.title = data.title.toUpperCase();
             return data;
         })
